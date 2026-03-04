@@ -23,9 +23,11 @@ function check_args {
 }
 
 function main {
+    git clone "https://github.com/daemonnd/file-renamer" file-renamer && cd file-renamer
     cp rename_one_file.sh /usr/local/bin/rename_one_file.sh
     cp file-renamer.sh /usr/local/bin/file-renamer
     chmod 755 /usr/local/bin/file-renamer
+    chmod 755 /usr/local/bin/rename_one_file.sh
 }
 
 # call main with all args, as given
