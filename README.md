@@ -5,7 +5,7 @@ It is given a path to a file containing paths to dirs, where all the files in it
 # Installation
 One-line install:
 ```bash
-curl -fsSL curl -fsSL https://raw.githubusercontent.com/daemonnd/file-renamer/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/daemonnd/file-renamer/main/install.sh | sudo bash
 ```
 
 # Usage
