@@ -19,10 +19,11 @@ trap 'echo "Error on line $LINENO: command \"$BASH_COMMAND\" exited with status 
 trap 'cleanup' INT TERM 
 
 function check_args {
-    echo 
+    echo "${1:?ERROR: A path to a list file containing dir paths have to be providen as first argument.}"
+    echo
 }
 function file_exists {
-    echo "${@@Q}"
+    # check wether $1 exists or not, return 1 if not, return 0 if yes
     if [[ ! -e "$1" ]]; then 
         echo "File ${1@Q} does not exist!"
         return 1
@@ -30,27 +31,43 @@ function file_exists {
         return 0
     fi
 }
-function rename {
-    echo "${@@Q}"
-    # renames the file/dirname given by the first arg
-    local raw_filename="${1##*/}"
-    local dest_path="${1%/*}/${raw_filename// /_}"
-    echo "how the final mv path would look like: $1 and then $dest_path"
-    if [[ ! "$1" == "$dest_path" ]]; then
-        mv "$1" "$dest_path"
+function dir_exists {
+    # check wether $1 exists or not, return 1 if not, return 0 if yes
+    if [[ ! -d "$1" ]]; then
+        if [[ ! file_exists ]]; then
+            echo "ERROR: ${1@Q} does not exist!"
+        else
+            echo "ERROR: ${1@Q}1 is not a dir!"
+        fi
+        return 1
     else
-        echo "$1 and $dest_path are the same. $1 seems to have a non-problematic name already."
-    fi
-    #mv "$1" "$dest_path"
+            return 0
+        fi
+    }
+    function init {
+        # initialize the script by checking if the dirs in the list file exist, and saving all the paths in an array
+
+        # check if the list file exists
+        if ! file_exists "$1"; then
+            echo "ERROR: The list file does not exist!"
+            exit 1
+        fi
+
+        # save all the dir paths in an array
+        mapfile -t dirlist < <(cat "$1")
+
+    for dir in "${dirlist[@]}"; do
+        dir_exists "$dir"
+    done
+
 }
 
 function main {
-    for file in "$@"; do
-        if file_exists "$file"; then
-            rename "$file"
-        else
-            echo "file ${file@Q} does not exist!"
-        fi
+    check_args "$@"
+    init "$@"
+    for dir in "${dirlist[@]}"; do
+        echo "current dir: ${dir@Q}"
+        find "${dir}" -depth -print0 | xargs -0 -L1 /usr/local/bin/rename_one_file.sh
     done
 }
 
