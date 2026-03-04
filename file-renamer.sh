@@ -14,7 +14,7 @@ function cleanup {
 }
 
 # trap errors
-trap 'echo "Error on line $LINENO: command \"$BASH_COMMAND\" exited with status $?" >&2' ERR
+trap 'echo "Error on line $LINENO in file-renamer.sh: command \"$BASH_COMMAND\" exited with status $?" >&2' ERR
 # trap signals
 trap 'cleanup' INT TERM 
 
