@@ -67,7 +67,7 @@ function main {
     init "$@"
     for dir in "${dirlist[@]}"; do
         echo "current dir: ${dir@Q}"
-        find "${dir}" -depth -print0 | xargs -0 -L1 /usr/local/bin/rename_one_file.sh
+        find "${dir}" -mindepth 1 -depth -print0 | xargs -0 -L1 /usr/local/bin/rename_one_file.sh
     done
 }
 
