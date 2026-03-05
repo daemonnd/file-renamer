@@ -43,6 +43,12 @@ function clean_name {
         improved_filename="${improved_filename//$char}"
     done
 
+    # remove leading and trailing _ and -
+    improved_filename=$(echo "$improved_filename" | sed -E 's/^-+//')
+    improved_filename=$(echo "$improved_filename" | sed -E 's/^_+//')
+    improved_filename=$(echo "$improved_filename" | sed -E 's/_+$//')
+    improved_filename=$(echo "$improved_filename" | sed -E 's/-+$//')
+
     # add file creation date to the beginning if it does not exist
     if [[ ! "$improved_filename" =~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}'  ]]; then
         local file_creation_date="$(stat -c '%w' "$1" | awk ' { print $1 } ' )"
@@ -54,12 +60,6 @@ function clean_name {
 
     # replace __ with _
     improved_filename="${improved_filename//__/_}"
-
-    # remove leading and trailing _ and -
-    local trailing_leading='-_.'
-    local pattern="[${trailing_leading}]*"
-    improved_filename="${improved_filename##$pattern}"
-    improved_filename="${improved_filename%%$pattern}"
 
     # save destination path & actually rename the file
     local dest_path="${1%/*}/${improved_filename}"
