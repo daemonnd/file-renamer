@@ -27,6 +27,7 @@ The only contents of the file appended as first arg is the dir paths (where all 
 # Features
 - rename files automatically
 - remove problematic characters for linux fs
+- control output with the -v and -s flags
 
 
 # Status
