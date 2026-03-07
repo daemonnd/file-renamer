@@ -10,7 +10,16 @@ curl -fsSL https://raw.githubusercontent.com/daemonnd/file-renamer/main/install.
 
 # Usage
 ```bash
-file-renamer ~/path/to/file/containing/dirpaths/to/rename
+file-renamer -v ~/path/to/file/containing/dirpaths/to/rename
+# flags: -s; -v; -vv
+without any flag:
+file-renamer ~/path/to/file/containing/dirpaths/to/rename # only outputs the current dir from the appended file it is working on, warnings and errors
+# with the -s flag:
+file-renamer -s ~/path/to/file/containing/dirpaths/to/rename # outputs nothing except errors
+# with the -v flag (recommended):
+file-renamer -v ~/path/to/file/containing/dirpaths/to/rename # logs old_file_name -> new_file_name, only the files/dirs where the name actually changed, warings and errors
+# with the -vv flag:
+file-renamer -vv ~/path/to/file/containing/dirpaths/to/rename # logs everything from above, including the files that did not change their name
 ```
 
 The only contents of the file appended as first arg is the dir paths (where all the children files and dirs will be renamed recursively) have to litterally be the dir paths and nothing else.
