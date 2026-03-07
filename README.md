@@ -29,6 +29,11 @@ The only contents of the file appended as first arg is the dir paths (where all 
 - remove problematic characters for linux fs
 - control output with the -v and -s flags
 
+# Limitations
+- blacklist approach is fragile
+- too much subprocesses whith a lot of files (what happens if it breaks while 50k subprocesses are running?)
+- No filtering (regex) for selecting which files should be renamed
+
 
 # Status
 in development
