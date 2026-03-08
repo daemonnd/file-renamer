@@ -1,9 +1,10 @@
 # Automated File Renamer
 
 This linux fs file renamer cleans the names of files and dirs that contain problemetic characters like spaces, \*, #, etc.
-It is given a path to a file containing paths to dirs, where all the files in it get a cleaner name. It works for user-made files but also for auto-generated files and is therefore great for a cron job for example.
+It is given a path to a file containing paths to dirs, where all the files in it get a cleaner name.
+It works for user-made files but also for auto-generated files and is therefore great for a cron job for example.
 
-# Installation
+## Installation
 
 One-line install:
 
@@ -11,7 +12,7 @@ One-line install:
 curl -fsSL https://raw.githubusercontent.com/daemonnd/file-renamer/main/install.sh | sudo bash
 ```
 
-# Usage
+## Usage
 
 ```bash
 file-renamer -v ~/path/to/file/containing/dirpaths/to/rename
@@ -28,19 +29,19 @@ file-renamer -vv ~/path/to/file/containing/dirpaths/to/rename # logs everything 
 
 The only contents of the file appended as first arg is the dir paths (where all the children files and dirs will be renamed recursively) have to litterally be the dir paths and nothing else.
 
-# Features
+## Features
 
 - rename files automatically
 - remove problematic characters for linux fs
 - control output with the -v and -s flags
 
-# Limitations
+## Limitations
 
 - blacklist approach is fragile
 - too much subprocesses whith a lot of files (what happens if it breaks while 50k subprocesses are running?)
 - No filtering (regex) for selecting which files should be renamed
 - unicode transliteration problem (é → e)
 
-# Status
+## Status
 
 In development
