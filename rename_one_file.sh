@@ -16,11 +16,11 @@ function cleanup {
 # trap errors
 trap 'echo "Error on line $LINENO in rename_one_file.sh: command \"$BASH_COMMAND\" exited with status $?" >&2' ERR
 # trap signals
-trap 'cleanup' INT TERM 
+trap 'cleanup' INT TERM
 
 function check_args {
     : "${1:?ERROR: The output mode has to be given as first argument (int from -1 to 2).}"
-    : "${2:?ERROR: An absolute filepath has to be gives as the first argument.}"  
+    : "${2:?ERROR: An absolute filepath has to be gives as the first argument.}"
 
     # save the output mode
     output_mode="$1"
@@ -28,7 +28,7 @@ function check_args {
 }
 function file_exists {
     # check wether $1 exists or not, return 1 if not, return 0 if yes
-    if [[ ! -e "$1" ]]; then 
+    if [[ ! -e "$1" ]]; then
         log "ERROR" "File ${1@Q} does not exist!" -2
         return 1
     else
@@ -37,7 +37,7 @@ function file_exists {
 }
 function is_file {
     # check wether the arg is a regular file or a dir
-    if [[ -f "$1" ]]; then 
+    if [[ -f "$1" ]]; then
         return 0
     else
         return 1
@@ -45,7 +45,7 @@ function is_file {
 }
 function log {
     # logs the output depending on the output_mode
-    # args: 
+    # args:
     # 1. loglevel (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     # 2. logmessage
     # 3. min. output_mode
@@ -63,7 +63,7 @@ function clean_name {
 
     # apply removing probelmatic characters
     for char in "${blacklist_characters[@]}"; do
-        improved_filename="${improved_filename//$char}"
+        improved_filename="${improved_filename//$char/}"
     done
 
     # remove leading and trailing _ and - and trailing .
@@ -71,8 +71,8 @@ function clean_name {
 
     # add file creation date to the beginning if it does not exist and it is a regular file
     if is_file "$1"; then
-        if [[ ! "$improved_filename" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}  ]]; then
-            local file_creation_date="$(stat -c '%w' "$1" | awk ' { print $1 } ' )"
+        if [[ ! "$improved_filename" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2} ]]; then
+            local file_creation_date="$(stat -c '%w' "$1" | awk ' { print $1 } ')"
             # only add the creation date to the beginning of the file if it is not '-'
             if [[ "$file_creation_date" != '-' ]]; then
                 improved_filename="${file_creation_date}_${improved_filename}"
@@ -124,4 +124,3 @@ function main {
 check_args "$@"
 # call main with all args, as given
 main "$@"
-
