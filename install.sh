@@ -19,7 +19,7 @@ trap 'echo "Error on line $LINENO: command \"$BASH_COMMAND\" exited with status 
 trap 'cleanup' INT TERM ERR
 
 function check_args {
-    echo 
+    :
 }
 
 function main {
@@ -29,7 +29,5 @@ function main {
     chmod 755 /usr/local/bin/file-renamer
     chmod 755 /usr/local/bin/rename_one_file.sh
 }
-
 # call main with all args, as given
 main "$@"
-
