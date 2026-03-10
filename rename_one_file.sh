@@ -58,13 +58,21 @@ function clean_name {
     local raw_filename="${1##*/}"
     local improved_filename="$raw_filename"
 
+    # replace all spaces by _
     improved_filename="${improved_filename//[[:space:]]/_}"
-    blacklist_characters=(':' '´' '&' '#' '+' '\*' '~' '(' ')' '[' ']' '{' '}' ',' '\?' '@' ';' '=' '%') # * ( ) [ ] ? @
 
-    # apply removing probelmatic characters
-    for char in "${blacklist_characters[@]}"; do
-        improved_filename="${improved_filename//$char/}"
-    done
+    # unicode transliterate characters to ACII # TODO make this work
+    improved_filename="$(echo $improved_filename | iconv -f utf-8 -t ASCII//TRANSLIT)"
+    echo "$improved_filename"
+
+    # removing all the characters that are not in the whitelist
+    improved_filename="$(echo $improved_filename | sed 's/[^a-zA-Z0-9._-]//g')"
+
+    # check if the filename is not nothing
+    if [[ -z "$improved_filename" ]]; then
+        log "WARNING" "Counld not clean the name of ${raw_filename}, because it would be empty. It will stay as it is, so please rename it manually." 0
+        exit 0
+    fi
 
     # remove leading and trailing _ and - and trailing .
     improved_filename=$(echo "$improved_filename" | sed -E 's/^-+//; s/^_+//; s/_+$//; s/-+$//; s/\.$//')
@@ -80,17 +88,11 @@ function clean_name {
         fi
     fi
 
-    # replace __ with _
-    improved_filename="${improved_filename//__/_}"
-
-    # check wether $improved_filename is empty (only contains the date)
-    if [[ "$improved_filename" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}_$ ]]; then
-        log "WARNING" "Counld not clean the name of ${raw_filename}, because it would be empty. It will stay as it is, so please rename it manually." 0
-        improved_filename="$raw_filename"
-    elif [[ -z "$improved_filename" ]]; then
-        log "WARNING" "Counld not clean the name of ${raw_filename}, because it would be empty. It will stay as it is, so please rename it manually." 0
-        improved_filename="$raw_filename"
-    fi
+    # replace duplicate . - _ by non-duplicate versions
+    improved_filename="$(echo improved_filename | sed -E 's/-+//-; s/_+//_; s/\.+//\.')"
+    #improved_filename="${improved_filename//\.\./.}"
+    #improved_filename="${improved_filename//--/-}"
+    #improved_filename="${improved_filename//__/_}"
 
     # save destination path & actually rename the file
     local dest_path="${1%/*}/${improved_filename}"
