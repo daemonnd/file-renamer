@@ -91,7 +91,7 @@ function clean_name {
     # check if the filename is not nothing
     if [[ -z "$improved_filename" ]]; then
         log "WARNING" "Counld not clean the name of ${raw_filename}, because it would be empty. It will stay as it is, so please rename it manually." 0
-        exit 0
+        return 0
     fi
     # add file creation date to the beginning if it does not exist and it is a regular file
     if is_file "$1"; then
