@@ -60,23 +60,39 @@ function clean_name {
 
     # replace all spaces by _
     improved_filename="${improved_filename//[[:space:]]/_}"
+    #echo "DEBUG: after replacing spaces: $improved_filename"
 
     # unicode transliterate characters to ACII # TODO make this work
     improved_filename="$(echo $improved_filename | iconv -f utf-8 -t ASCII//TRANSLIT)"
-    echo "$improved_filename"
 
     # removing all the characters that are not in the whitelist
     improved_filename="$(echo $improved_filename | sed 's/[^a-zA-Z0-9._-]//g')"
+    #echo "DEBUG: after whitelist: $improved_filename"
+
+    # replace duplicate . - _ by non-duplicate versions
+    improved_filename="$(echo $improved_filename | sed -E 's/-+/-/g; s/_+/_/g; s/\.+/\./g')"
+    #echo "DEBUG: after . _ - duplicate: $improved_filename"
+
+    # remove leading and trailing _ and - and trailing .
+    improved_filename=$(echo "$improved_filename" | sed -E 's/^-+//; s/^_+//; s/_+$//; s/-+$//; s/\.$//')
+
+    # replace -_ and _- by _
+    improved_filename="${improved_filename//-_/_}"
+    improved_filename="${improved_filename//_-/_}"
+
+    # replace ._ and _. by .
+    improved_filename="${improved_filename//\._/\.}"
+    improved_filename="${improved_filename//_\./\.}"
+
+    # re-replace duplicate . - _ by non-duplicate versions to avoid double __ after ._ -_ replacements
+    improved_filename="$(echo $improved_filename | sed -E 's/-+/-/g; s/_+/_/g; s/\.+/\./g')"
+    #echo "DEBUG: after . _ - duplicate: $improved_filename"
 
     # check if the filename is not nothing
     if [[ -z "$improved_filename" ]]; then
         log "WARNING" "Counld not clean the name of ${raw_filename}, because it would be empty. It will stay as it is, so please rename it manually." 0
         exit 0
     fi
-
-    # remove leading and trailing _ and - and trailing .
-    improved_filename=$(echo "$improved_filename" | sed -E 's/^-+//; s/^_+//; s/_+$//; s/-+$//; s/\.$//')
-
     # add file creation date to the beginning if it does not exist and it is a regular file
     if is_file "$1"; then
         if [[ ! "$improved_filename" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2} ]]; then
@@ -87,12 +103,6 @@ function clean_name {
             fi
         fi
     fi
-
-    # replace duplicate . - _ by non-duplicate versions
-    improved_filename="$(echo improved_filename | sed -E 's/-+//-; s/_+//_; s/\.+//\.')"
-    #improved_filename="${improved_filename//\.\./.}"
-    #improved_filename="${improved_filename//--/-}"
-    #improved_filename="${improved_filename//__/_}"
 
     # save destination path & actually rename the file
     local dest_path="${1%/*}/${improved_filename}"
