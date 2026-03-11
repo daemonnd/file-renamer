@@ -24,12 +24,12 @@ function check_args {
 
 function main {
     # delete all the previous test dirs
-    rm -r ./testing/
-    rm -r ./auto_rename_test/
+    rm -rf ./testing
+    rm -rf ./auto_rename_test/
 
     # re-create the dirs
-    mkdir ./testing/
-    mkdir ./auto_rename_test/
+    mkdir -p ./testing/
+    mkdir -p ./auto_rename_test/
 
     # create testing dirs
     mkdir -p ./testing/'badly name d *-+ dir  ???!'/'cool @ home'
