@@ -23,7 +23,7 @@ function check_args {
 }
 
 function main {
-    mv ./rename_one_file.sh /usr/local/bin/rename_one_file.sh
+    cp ./rename_one_file.sh /usr/local/bin/rename_one_file.sh
     chmod 755 /usr/local/bin/rename_one_file.sh
 }
 
