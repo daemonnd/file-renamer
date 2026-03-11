@@ -34,10 +34,11 @@ The only contents of the file appended as first arg is the dir paths (where all 
 - rename files automatically
 - remove problematic characters for linux fs
 - control output with the -v and -s flags
+- removes any problematic characters by only keeping numbers, ACII letters and . _ and -
+- check for proper file permissions before renaming
 
 ## Limitations
 
-- blacklist approach is fragile
 - too much subprocesses whith a lot of files (what happens if it breaks while 50k subprocesses are running?)
 - No filtering (regex) for selecting which files should be renamed
 
@@ -47,16 +48,18 @@ The only contents of the file appended as first arg is the dir paths (where all 
 2. It checks if the appended file exists and is readable
 3. It iterates over each line in that file and gets all files recursively for this dir
 4. For each file:
- 4.1 It replaces all spaces by _
- 4.2 It replaces all non-ACII characters by ACII characters (Unicode-tranliteration to ACII)
+    4.1 It replaces all spaces by _
+    4.2 It replaces all non-ACII characters by ACII characters (Unicode-tranliteration to ACII)
     4.3 It removes all the characters that are not in the whitelist (that only contains a-z, 0-9, ., -,_
-    4.4 It checks if the filename is not nothing
-        4.4.1 If the filename is nothing: The old one is kept and the file does not get renamed
-        4.4.2 If the filename is not nothing, it still contains characters, it continues with step 4.5
-    4.5 It removes all leading - and _and also removes all trailing . - and old_file_name
-    4.6 It adds the file creation date (if it exists) to the beginning of the file
-    4.7 It removes all duplicate - and_ and . (--, __, ..)
-    4.8 The file gets renamed
+    4.4 It replaces duplicate . _- by non-duplicate versions
+    4.5 It removes trailing ._ - and leading _-
+    4.6 It replaces -_ and _- by _
+    4.7 It replaces ._ and _. by .
+    4.8 It re-replaces duplicate ._ - by non-duplicate versions (to remove - and . created in step 4.6 and 4.7)
+    4.9 It checks if the filename is not nothing
+        4.9.1 If the filename is nothing: The old one is kept and the file does not get renamed
+    5.0 It adds the creation date (only if it is a file) to the beginning
+    5.1 It renames the file
 
 ## Status
 
