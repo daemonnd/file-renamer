@@ -34,10 +34,11 @@ The only contents of the file appended as first arg is the dir paths (where all 
 - rename files automatically
 - remove problematic characters for linux fs
 - control output with the -v and -s flags
+- removes any problematic characters by only keeping numbers, ACII letters and . _ and -
+- check for proper file permissions before renaming
 
 ## Limitations
 
-- No check for file permissions
 - too much subprocesses whith a lot of files (what happens if it breaks while 50k subprocesses are running?)
 - No filtering (regex) for selecting which files should be renamed
 
