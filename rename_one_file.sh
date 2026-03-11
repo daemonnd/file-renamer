@@ -27,6 +27,7 @@ function check_args {
     output_mode="$1"
     args="$2"
 }
+
 function file_exists {
     # check wether $1 exists or not, return 1 if not, return 0 if yes
     if [[ ! -e "$1" ]]; then
@@ -36,6 +37,7 @@ function file_exists {
         return 0
     fi
 }
+
 function is_file {
     # check wether the arg is a regular file or a dir
     if [[ -f "$1" ]]; then
@@ -44,6 +46,7 @@ function is_file {
         return 1
     fi
 }
+
 function log {
     # logs the output depending on the output_mode
     # args:
@@ -54,7 +57,22 @@ function log {
         echo "${1}: $2"
     fi
 }
+
+function check_permissions {
+    # checks if it is possible to rename the file
+    if [[ ! -w "$1" ]]; then
+        log "ERROR" "File $1 can't be renamed because it does not have the write permission" -2
+        return 1
+    else
+        return 0
+    fi
+}
+
 function clean_name {
+    # check the permissions of the file first
+    if ! check_permissions "$1"; then
+        return 1
+    fi
     # clean_names the file given by the first arg
     local raw_filename="${1##*/}"
     local improved_filename="$raw_filename"
