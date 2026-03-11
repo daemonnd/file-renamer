@@ -5,12 +5,13 @@ set -Eeuo pipefail
 
 # Cleanup function
 function cleanup {
+    local exit_code="$?"
     echo "Script interupted or failed. Cleaning up..."
 
     # remove tmp files
 
     # exit the script, preserving the exit code
-    exit "$?"
+    exit "$exit_code"
 }
 
 # trap errors
@@ -58,17 +59,41 @@ function clean_name {
     local raw_filename="${1##*/}"
     local improved_filename="$raw_filename"
 
+    # replace all spaces by _
     improved_filename="${improved_filename//[[:space:]]/_}"
-    blacklist_characters=(':' '´' '&' '#' '+' '\*' '~' '(' ')' '[' ']' '{' '}' ',' '\?' '@' ';' '=' '%') # * ( ) [ ] ? @
+    #echo "DEBUG: after replacing spaces: $improved_filename"
 
-    # apply removing probelmatic characters
-    for char in "${blacklist_characters[@]}"; do
-        improved_filename="${improved_filename//$char/}"
-    done
+    # unicode transliterate characters to ACII # TODO make this work
+    improved_filename="$(echo $improved_filename | iconv -f utf-8 -t ASCII//TRANSLIT)"
+
+    # removing all the characters that are not in the whitelist
+    improved_filename="$(echo $improved_filename | sed 's/[^a-zA-Z0-9._-]//g')"
+    #echo "DEBUG: after whitelist: $improved_filename"
+
+    # replace duplicate . - _ by non-duplicate versions
+    improved_filename="$(echo $improved_filename | sed -E 's/-+/-/g; s/_+/_/g; s/\.+/\./g')"
+    #echo "DEBUG: after . _ - duplicate: $improved_filename"
 
     # remove leading and trailing _ and - and trailing .
     improved_filename=$(echo "$improved_filename" | sed -E 's/^-+//; s/^_+//; s/_+$//; s/-+$//; s/\.$//')
 
+    # replace -_ and _- by _
+    improved_filename="${improved_filename//-_/_}"
+    improved_filename="${improved_filename//_-/_}"
+
+    # replace ._ and _. by .
+    improved_filename="${improved_filename//\._/\.}"
+    improved_filename="${improved_filename//_\./\.}"
+
+    # re-replace duplicate . - _ by non-duplicate versions to avoid double __ after ._ -_ replacements
+    improved_filename="$(echo $improved_filename | sed -E 's/-+/-/g; s/_+/_/g; s/\.+/\./g')"
+    #echo "DEBUG: after . _ - duplicate: $improved_filename"
+
+    # check if the filename is not nothing
+    if [[ -z "$improved_filename" ]]; then
+        log "WARNING" "Counld not clean the name of ${raw_filename}, because it would be empty. It will stay as it is, so please rename it manually." 0
+        return 0
+    fi
     # add file creation date to the beginning if it does not exist and it is a regular file
     if is_file "$1"; then
         if [[ ! "$improved_filename" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2} ]]; then
@@ -78,18 +103,6 @@ function clean_name {
                 improved_filename="${file_creation_date}_${improved_filename}"
             fi
         fi
-    fi
-
-    # replace __ with _
-    improved_filename="${improved_filename//__/_}"
-
-    # check wether $improved_filename is empty (only contains the date)
-    if [[ "$improved_filename" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}_$ ]]; then
-        log "WARNING" "Counld not clean the name of ${raw_filename}, because it would be empty. It will stay as it is, so please rename it manually." 0
-        improved_filename="$raw_filename"
-    elif [[ -z "$improved_filename" ]]; then
-        log "WARNING" "Counld not clean the name of ${raw_filename}, because it would be empty. It will stay as it is, so please rename it manually." 0
-        improved_filename="$raw_filename"
     fi
 
     # save destination path & actually rename the file

@@ -19,7 +19,7 @@ trap 'echo "Error on line $LINENO: command \"$BASH_COMMAND\" exited with status 
 trap 'cleanup' INT TERM ERR
 
 function check_args {
-    echo 
+    echo
 }
 
 function main {
@@ -30,7 +30,7 @@ function main {
     # re-create the dirs
     mkdir ./testing/
     mkdir ./auto_rename_test/
-    
+
     # create testing dirs
     mkdir -p ./testing/'badly name d *-+ dir  ???!'/'cool @ home'
 
@@ -42,8 +42,16 @@ function main {
 
     touch ./testing/'2026-04-99_graet name d  file-'
     touch ./auto_rename_test/2026-01-23_file
+    touch 'testing/héllo wörld.txt'
+    touch 'testing/file--double.txt'
+    touch 'testing/---leading.txt'
+    touch 'testing/trailing...'
+    touch 'testing/normalfile.txt'
+    mkdir -p 'testing/dir with spaces/nested'
+    touch 'testing/dir with spaces/nested/fileïn_here.txt'
+    touch 'testing/2026-03-10_already_dated.txt'
+    touch 'testing/__ugly___name__.txt'
 }
 
 # call main with all args, as given
 main "$@"
-
