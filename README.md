@@ -37,7 +37,7 @@ The only contents of the file appended as first arg is the dir paths (where all 
 
 ## Limitations
 
-- blacklist approach is fragile
+- No check for file permissions
 - too much subprocesses whith a lot of files (what happens if it breaks while 50k subprocesses are running?)
 - No filtering (regex) for selecting which files should be renamed
 
