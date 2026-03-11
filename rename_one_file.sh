@@ -5,12 +5,13 @@ set -Eeuo pipefail
 
 # Cleanup function
 function cleanup {
+    local exit_code="$?"
     echo "Script interupted or failed. Cleaning up..."
 
     # remove tmp files
 
     # exit the script, preserving the exit code
-    exit "$?"
+    exit "$exit_code"
 }
 
 # trap errors
